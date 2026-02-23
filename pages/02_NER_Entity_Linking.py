@@ -6,8 +6,17 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 from neurolex.utils import styled_header, no_model_warning
 from neurolex.config import MODELS
-
+from app import render_sidebar
+render_sidebar()    
 st.set_page_config(page_title="NER & Entity Linking | NEUROLEX", page_icon="🔍", layout="wide")
+st.markdown("""
+<style>
+/* Hide Streamlit auto multipage navigation */
+[data-testid="stSidebarNav"] {
+    display: none !important;
+}
+</style>
+""", unsafe_allow_html=True)
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');

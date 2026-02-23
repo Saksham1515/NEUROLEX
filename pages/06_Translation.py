@@ -5,7 +5,8 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 from neurolex.utils import styled_header, no_model_warning
 from neurolex.config import TRANSLATION_PAIRS
-
+from app import render_sidebar
+render_sidebar()    
 st.set_page_config(page_title="Translation | NEUROLEX", page_icon="🌍", layout="wide")
 st.markdown("""
 <style>
@@ -18,7 +19,14 @@ html,body,[class*="css"]{font-family:'Inter',sans-serif!important;background:#0D
 #MainMenu,footer{visibility:hidden;}
 </style>
 """, unsafe_allow_html=True)
-
+st.markdown("""
+<style>
+/* Hide Streamlit auto multipage navigation */
+[data-testid="stSidebarNav"] {
+    display: none !important;
+}
+</style>
+""", unsafe_allow_html=True)
 styled_header("🌍", "Machine Translation", "Multilingual translation via Helsinki-NLP OPUS-MT (MarianMT), 14+ language pairs", "#4CC9F0")
 st.info("💡 Each language pair uses a separately trained MarianMT model (~300MB). The first run may take time to download.", icon="ℹ️")
 

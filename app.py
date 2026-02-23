@@ -2,7 +2,14 @@
 NEUROLEX — Main Streamlit Application Entry Point
 """
 import streamlit as st
-
+st.markdown("""
+<style>
+/* Hide Streamlit auto multipage navigation */
+[data-testid="stSidebarNav"] {
+    display: none !important;
+}
+</style>
+""", unsafe_allow_html=True)
 # ─── Page Configuration ───────────────────────────────────────────────────────
 st.set_page_config(
     page_title="NEUROLEX | Advanced NLP Platform",
@@ -148,6 +155,7 @@ st.markdown("""
     font-family: 'JetBrains Mono', monospace !important;
     color: var(--secondary) !important;
   }
+  
 </style>
 """, unsafe_allow_html=True)
 
@@ -228,51 +236,14 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# ─── Architecture Diagram ─────────────────────────────────────────────────────
-st.markdown("## 🏗️ System Architecture")
-col1, col2 = st.columns([3, 2])
 
-with col1:
-    st.markdown("""
-    <div style="background:#161B22;border:1px solid #30363D;border-radius:12px;
-                padding:20px;font-family:'JetBrains Mono',monospace;font-size:0.8em;
-                color:#E6EDF3;line-height:1.8;overflow-x:auto;">
-<pre style="margin:0;color:#E6EDF3;">
-┌──────────────────────────────────────────────────────────┐
-│                    🧠 NEUROLEX v1.0                      │
-│                  Streamlit Frontend UI                    │
-│  ┌────────────────────────────────────────────────────┐  │
-│  │   Sidebar Navigation (10 NLP Modules + Home)       │  │
-│  └─────────────────┬──────────────────────────────────┘  │
-│                    │                                      │
-│  ┌─────────────┬───┴─────────────┬──────────────────┐    │
-│  │ config.py   │  Module Registry│   utils.py       │    │
-│  └─────────────┴─────────────────┴──────────────────┘    │
-│                                                           │
-│  ┌─────────────── NLP Module Layer ───────────────────┐  │
-│  │ 01 Classifier   │ 02 NER+Link   │ 03 Semantic Srch│  │
-│  │ 04 RAG Q&A      │ 05 Summarizer │ 06 Translator   │  │
-│  │ 07 TopicModeler │ 08 Dialogue   │ 09 Hallucination│  │
-│  │ 10 Toxicity                                        │  │
-│  └────────────────────────────────────────────────────┘  │
-│                                                           │
-│  ┌────────────────────────────────────────────────────┐  │
-│  │        HuggingFace Transformers / Pipeline API     │  │
-│  │  BART · BERT · RoBERTa · DialoGPT · Helsinki-NLP  │  │
-│  └────────────────────────────────────────────────────┘  │
-└──────────────────────────────────────────────────────────┘
-</pre>
-    </div>
-    """, unsafe_allow_html=True)
-
-with col2:
-    st.markdown("""
+st.markdown("""
     <div style="background:#161B22;border:1px solid #30363D;border-radius:12px;padding:16px;">
       <h4 style="color:#6C63FF;margin:0 0 12px;">📐 Design Principles</h4>
       <div style="display:flex;flex-direction:column;gap:8px;">
     """, unsafe_allow_html=True)
 
-    principles = [
+principles = [
         ("🔧", "Modular", "Each task is an isolated, reusable class"),
         ("📦", "Cached", "Models loaded once via @st.cache_resource"),
         ("🔬", "Explainable", "Attribution scores, entity highlights"),
@@ -280,7 +251,7 @@ with col2:
         ("🌐", "Multilingual", "14+ language translation pairs"),
         ("🏭", "Production-ready", "Config-driven, extensible pipeline"),
     ]
-    for icon, title, desc in principles:
+for icon, title, desc in principles:
         st.markdown(f"""
         <div style="background:#21262D;border-radius:8px;padding:10px 12px;margin:4px 0;">
           <span style="font-size:1.1em;">{icon}</span>
@@ -289,7 +260,7 @@ with col2:
         </div>
         """, unsafe_allow_html=True)
 
-    st.markdown("</div></div>", unsafe_allow_html=True)
+st.markdown("</div></div>", unsafe_allow_html=True)
 
 
 # ─── Model Selection Table ────────────────────────────────────────────────────
@@ -351,148 +322,6 @@ fig.update_layout(
 )
 st.plotly_chart(fig, use_container_width=True)
 
-
-# ─── Training Pipeline ────────────────────────────────────────────────────────
-st.markdown("## ⚙️ Training & Fine-Tuning Pipeline")
-tab1, tab2, tab3, tab4 = st.tabs(["🔧 Pipeline", "📊 Evaluation Framework", "🔬 Explainability", "🚀 Deployment"])
-
-with tab1:
-    col1, col2 = st.columns(2)
-    with col1:
-        st.markdown("""
-        <div style="background:#161B22;border:1px solid #30363D;border-radius:10px;padding:16px;">
-          <h4 style="color:#6C63FF;margin:0 0 10px;">📥 Data Pipeline</h4>
-          <ol style="color:#E6EDF3;font-size:0.9em;padding-left:18px;line-height:2;">
-            <li>Raw corpus ingestion (JSONL/CSV/PDF)</li>
-            <li>Language detection + filtering</li>
-            <li>Text normalization & deduplication</li>
-            <li>Task-specific annotation (NER, QA spans)</li>
-            <li>Train/Val/Test split (80/10/10)</li>
-            <li>DataLoader with dynamic padding</li>
-          </ol>
-        </div>
-        """, unsafe_allow_html=True)
-    with col2:
-        st.markdown("""
-        <div style="background:#161B22;border:1px solid #30363D;border-radius:10px;padding:16px;">
-          <h4 style="color:#F72585;margin:0 0 10px;">🎓 Fine-Tuning Strategy</h4>
-          <ul style="color:#E6EDF3;font-size:0.9em;padding-left:18px;line-height:2;">
-            <li><b>Full fine-tune:</b> Classification, NER</li>
-            <li><b>PEFT/LoRA:</b> Large LMs (BART, GPT)</li>
-            <li><b>Adapters:</b> Domain adaptation</li>
-            <li><b>Optimizer:</b> AdamW + cosine LR</li>
-            <li><b>Scheduler:</b> Linear warmup (10%)</li>
-            <li><b>Gradient clipping:</b> max norm 1.0</li>
-          </ul>
-        </div>
-        """, unsafe_allow_html=True)
-
-    st.markdown("""
-    <div style="background:#161B22;border:1px solid #30363D;border-radius:10px;
-                padding:16px;margin-top:12px;">
-      <h4 style="color:#06D6A0;margin:0 0 10px;">🔄 Active & Continual Learning</h4>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
-        <div style="background:#21262D;border-radius:8px;padding:12px;">
-          <b style="color:#48CAE4;">Core Set Selection</b>
-          <p style="color:#8B949E;font-size:0.82em;margin:4px 0 0;">
-            Select most uncertain samples for human labeling using least-confidence or entropy sampling
-          </p>
-        </div>
-        <div style="background:#21262D;border-radius:8px;padding:12px;">
-          <b style="color:#48CAE4;">Elastic Weight Consolidation</b>
-          <p style="color:#8B949E;font-size:0.82em;margin:4px 0 0;">
-            Prevent catastrophic forgetting when fine-tuning on new domains/tasks
-          </p>
-        </div>
-        <div style="background:#21262D;border-radius:8px;padding:12px;">
-          <b style="color:#48CAE4;">Experience Replay</b>
-          <p style="color:#8B949E;font-size:0.82em;margin:4px 0 0;">
-            Maintain a memory buffer of past examples to interleave during new training
-          </p>
-        </div>
-      </div>
-    </div>
-    """, unsafe_allow_html=True)
-
-with tab2:
-    st.markdown("""
-    <div style="background:#161B22;border:1px solid #30363D;border-radius:10px;padding:16px;">
-    <h4 style="color:#FFB703;margin:0 0 12px;">📏 Task-Specific Metrics</h4>
-    </div>
-    """, unsafe_allow_html=True)
-
-    eval_data = {
-        "Task": [
-            "Text Classification", "NER", "Semantic Search", "Q&A / RAG",
-            "Summarization", "Translation", "Topic Modeling",
-            "Dialogue", "Hallucination", "Toxicity",
-        ],
-        "Primary Metric": [
-            "Macro-F1 / AUC-ROC", "F1 span-level", "NDCG@10 / MRR",
-            "Exact Match / F1", "ROUGE-1/2/L + BERTScore", "BLEU / chrF++",
-            "Topic Coherence (CV)", "Perplexity / BLEU-4", "FactCC Score",
-            "AUC-ROC / F1 per label",
-        ],
-        "Dataset": [
-            "MultiLabel NewsGroups", "CoNLL-2003", "MS MARCO / BEIR",
-            "SQuAD 2.0 / NQ", "CNN/DailyMail XSum", "WMT14/19",
-            "20 Newsgroups", "DailyDialog / ConvAI2", "FactCC / ViNLI",
-            "Jigsaw Toxic Comments",
-        ],
-    }
-    st.dataframe(pd.DataFrame(eval_data), use_container_width=True, hide_index=True)
-
-with tab3:
-    st.markdown("""
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-      <div style="background:#161B22;border:1px solid #30363D;border-radius:10px;padding:16px;">
-        <h4 style="color:#6C63FF;margin:0 0 10px;">🔍 Local Explanations</h4>
-        <ul style="color:#E6EDF3;font-size:0.88em;padding-left:18px;line-height:2;">
-          <li><b>LIME:</b> Perturb input tokens, fit local linear model</li>
-          <li><b>SHAP:</b> Shapley values for feature attribution</li>
-          <li><b>Attention Viz:</b> BertViz attention head rollout</li>
-          <li><b>Integrated Gradients:</b> Attributions via Captum</li>
-        </ul>
-      </div>
-      <div style="background:#161B22;border:1px solid #30363D;border-radius:10px;padding:16px;">
-        <h4 style="color:#F72585;margin:0 0 10px;">🌐 Global Explanations</h4>
-        <ul style="color:#E6EDF3;font-size:0.88em;padding-left:18px;line-height:2;">
-          <li><b>Probing Tasks:</b> Test what each layer encodes</li>
-          <li><b>Concept Activation Vectors (CAV):</b> Detect high-level concepts</li>
-          <li><b>Model Cards:</b> Bias, limitations, intended use</li>
-          <li><b>Error Analysis:</b> Failure mode clustering</li>
-        </ul>
-      </div>
-    </div>
-    """, unsafe_allow_html=True)
-
-with tab4:
-    st.markdown("""
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px;">
-      <div style="background:#161B22;border:1px solid #30363D;border-radius:10px;padding:16px;">
-        <h4 style="color:#6C63FF;margin:0 0 8px;">🐳 Containerization</h4>
-        <p style="color:#8B949E;font-size:0.85em;">Docker multi-stage build · FastAPI backend · Nginx reverse proxy · HTTPS/TLS</p>
-      </div>
-      <div style="background:#161B22;border:1px solid #30363D;border-radius:10px;padding:16px;">
-        <h4 style="color:#48CAE4;margin:0 0 8px;">⚡ Serving</h4>
-        <p style="color:#8B949E;font-size:0.85em;">ONNX export · TorchServe · vLLM for LLMs · Triton Inference Server</p>
-      </div>
-      <div style="background:#161B22;border:1px solid #30363D;border-radius:10px;padding:16px;">
-        <h4 style="color:#06D6A0;margin:0 0 8px;">📈 Monitoring</h4>
-        <p style="color:#8B949E;font-size:0.85em;">Prometheus + Grafana · Data drift detection (Evidently) · Model decay alerts</p>
-      </div>
-    </div>
-    <div style="background:#161B22;border:1px solid #30363D;border-radius:10px;padding:16px;">
-      <h4 style="color:#FFB703;margin:0 0 10px;">🌐 API Design (FastAPI)</h4>
-      <code style="font-size:0.82em;color:#48CAE4;font-family:'JetBrains Mono',monospace;">
-        POST /api/v1/classify · POST /api/v1/ner · POST /api/v1/search<br>
-        POST /api/v1/qa · POST /api/v1/summarize · POST /api/v1/translate<br>
-        POST /api/v1/topics · POST /api/v1/chat · GET /api/v1/health
-      </code>
-    </div>
-    """, unsafe_allow_html=True)
-
-
 # ─── Module Grid ──────────────────────────────────────────────────────────────
 st.markdown("## 🎯 NLP Modules")
 from neurolex.config import MODULE_INFO
@@ -516,6 +345,6 @@ st.markdown("""
 <div style="text-align:center;padding:30px 0 10px;color:#8B949E;font-size:0.8em;">
   <hr style="border-color:#30363D;margin-bottom:16px;">
   🧠 <b style="color:#6C63FF;">NEUROLEX</b> — Advanced NLP Research Platform · Built with
-  ❤️ using Python, Streamlit & HuggingFace Transformers
+  ❤️(saksham) using Python, Streamlit & HuggingFace Transformers
 </div>
 """, unsafe_allow_html=True)

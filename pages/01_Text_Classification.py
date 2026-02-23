@@ -2,13 +2,22 @@
 import streamlit as st
 import plotly.graph_objects as go
 import sys, os
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+from app import render_sidebar
+render_sidebar()    
+# sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 from neurolex.utils import styled_header, progress_bar_html, no_model_warning
 from neurolex.config import MODELS
 
 st.set_page_config(page_title="Text Classification | NEUROLEX", page_icon="🏷️", layout="wide")
-
+st.markdown("""
+<style>
+/* Hide Streamlit auto multipage navigation */
+[data-testid="stSidebarNav"] {
+    display: none !important;
+}
+</style>
+""", unsafe_allow_html=True)
 # Global CSS
 st.markdown("""
 <style>

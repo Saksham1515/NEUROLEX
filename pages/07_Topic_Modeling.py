@@ -6,7 +6,8 @@ import sys, os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 from neurolex.utils import styled_header
-
+from app import render_sidebar
+render_sidebar()    
 st.set_page_config(page_title="Topic Modeling | NEUROLEX", page_icon="📊", layout="wide")
 st.markdown("""
 <style>
@@ -18,7 +19,14 @@ html,body,[class*="css"]{font-family:'Inter',sans-serif!important;background:#0D
 #MainMenu,footer{visibility:hidden;}
 </style>
 """, unsafe_allow_html=True)
-
+st.markdown("""
+<style>
+/* Hide Streamlit auto multipage navigation */
+[data-testid="stSidebarNav"] {
+    display: none !important;
+}
+</style>
+""", unsafe_allow_html=True)
 styled_header("📊", "Topic Modeling", "Neural topic discovery using TF-IDF + SVD + K-Means (BERTopic-inspired)", "#7209B7")
 
 DEFAULT_CORPUS = """AI is transforming the healthcare industry with machine learning models for diagnosis.
