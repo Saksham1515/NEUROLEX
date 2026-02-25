@@ -8,6 +8,10 @@ from neurolex.utils import styled_header, no_model_warning
 from neurolex.config import MODELS
 from app import render_sidebar
 render_sidebar()    
+
+if "selected_text" not in st.session_state:
+    st.session_state.selected_text = " "
+
 st.set_page_config(page_title="NER & Entity Linking | NEUROLEX", page_icon="🔍", layout="wide")
 st.markdown("""
 <style>
@@ -38,14 +42,13 @@ EXAMPLES = [
 ]
 
 eg_cols = st.columns(3)
-selected = None
 for i, (ec, ex) in enumerate(zip(eg_cols, EXAMPLES)):
     with ec:
         if st.button(f"Example {i+1}", key=f"ner_ex_{i}", use_container_width=True):
-            selected = ex
+            st.session_state.selected_text = ex
 
 text = st.text_area(
-    "Input Text", value=selected or "",
+    "Input Text", value=st.session_state.selected_text or "",
     height=150, placeholder="Paste text with named entities...",
 )
 link_entities = st.checkbox("🔗 Enable Wikipedia Entity Linking", value=True)

@@ -9,6 +9,9 @@ render_sidebar()
 from neurolex.utils import styled_header, progress_bar_html, no_model_warning
 from neurolex.config import MODELS
 
+if "selected_text" not in st.session_state:
+    st.session_state.selected_text = " "
+
 st.set_page_config(page_title="Text Classification | NEUROLEX", page_icon="🏷️", layout="wide")
 st.markdown("""
 <style>
@@ -48,15 +51,14 @@ col1, col2 = st.columns([3, 2])
 with col1:
     st.markdown("**📄 Input Text**")
     eg_cols = st.columns(3)
-    selected_text = None
     for i, (ec, ex) in enumerate(zip(eg_cols, EXAMPLES)):
         with ec:
             if st.button(f"Example {i+1}", key=f"clf_ex_{i}", use_container_width=True):
-                selected_text = ex
+                st.session_state.selected_text = ex
 
     text = st.text_area(
-        "Enter text to classify",
-        value=selected_text or "",
+        label="Enter text to classify",
+        value=st.session_state.selected_text,
         height=160,
         placeholder="Paste any text here...",
         label_visibility="collapsed",
@@ -85,6 +87,7 @@ if run and text.strip():
             clf = MultiLabelClassifier()
             result = clf.classify(text, labels, threshold=threshold, multi_label=multi_label)
 
+
         if result:
             st.markdown("---")
             c1, c2, c3 = st.columns(3)
@@ -96,11 +99,11 @@ if run and text.strip():
             with tab1:
                 scores = result["results"]
                 sorted_items = sorted(scores.items(), key=lambda x: -x[1])
-                html = ""
-                for label, score in sorted_items:
-                    color = "#6C63FF" if score >= threshold else "#8B949E"
-                    html += progress_bar_html(score, color=color, label=label)
-                st.markdown(html, unsafe_allow_html=True)
+                # html = ""
+                # for label, score in sorted_items:
+                #     color = "#6C63FF" if score >= threshold else "#8B949E"
+                #     html += progress_bar_html(score, color=color, label=label)
+                # st.markdown(html, unsafe_allow_html=True)
 
                 fig = go.Figure(go.Bar(
                     x=[s for _, s in sorted_items],
