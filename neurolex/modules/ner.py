@@ -5,8 +5,9 @@ BERT-NER for extraction, Wikipedia API for linking.
 from __future__ import annotations
 import streamlit as st
 from transformers import pipeline
-from neurolex.config import MODELS
-
+from neurolex.config import MODELS,HEADERS
+# import utils
+# from sentence_transformers import SentenceTransformer
 
 @st.cache_resource(show_spinner=False)
 def _load_ner_pipeline():
@@ -16,6 +17,10 @@ def _load_ner_pipeline():
         model=cfg["model_name"],
         aggregation_strategy=cfg["aggregation"],
     )
+    
+# @st.cache_resource(show_spinner=False)
+# def _load_embedding_model():
+#     return SentenceTransformer(MODELS["semantic_search"]["model_name"])
 
 
 class NERLinker:
@@ -37,6 +42,7 @@ class NERLinker:
 
     def __init__(self):
         self.ner = _load_ner_pipeline()
+        # self.embedder = _load_embedding_model()
 
     def extract_entities(self, text: str) -> list[dict]:
         """
@@ -59,6 +65,42 @@ class NERLinker:
             }
             for r in results
         ]
+    
+    # This method is an alternative approach to entity linking using semantic search with sentence transformers.
+    # !!!(doesn't perform well in practice for short entity names, but can be useful for longer phrases or ambiguous cases)
+    
+    # def _search_wikipedia(self,user_input: str, entity: str, limit: int = 3):
+    #     url = "https://en.wikipedia.org/w/api.php"
+
+    #     params = {
+    #         "action": "query",
+    #         "list": "search",
+    #         "srsearch": entity,
+    #         "format": "json",
+    #         "srlimit": limit,
+    #     }
+    #     result = {}
+    #     try:
+    #         r = requests.get(url, params=params, headers=HEADERS, timeout=8)
+    #         data = r.json()
+    #         titles = [item["title"] for item in data.get("query", {}).get("search", [])]
+    #         for each_title in titles:
+    #             snippit_url = f"https://en.wikipedia.org/api/rest_v1/page/summary/{each_title.replace(' ', '_')}"
+    #             r = requests.get(snippit_url, headers=HEADERS, timeout=8)
+    #             data = r.json()
+    #             result[data.get("title", each_title)] = data.get("extract", "No description found.")[:400]
+            
+    #         embedder = self.embedder
+    #         context_vec = self.embedder.encode(user_input, convert_to_tensor=True)
+    #         candidate_vecs = embedder.encode(list(result.values()), convert_to_tensor=True)
+    #         scores = utils.cos_sim(context_vec, candidate_vecs)
+    #         best_idx = scores.argmax().item()
+    #         best_title = list(result.keys())[best_idx]
+    #         return best_title
+    #     except Exception:
+    #         return entity
+        
+        
 
     def link_entity(self, entity_name: str) -> dict:
         """
@@ -70,8 +112,9 @@ class NERLinker:
         import requests
 
         url = f"https://en.wikipedia.org/api/rest_v1/page/summary/{entity_name.replace(' ', '_')}"
+        
         try:
-            resp = requests.get(url, timeout=8)
+            resp = requests.get(url, headers=HEADERS, timeout=8)
             if resp.status_code == 200:
                 data = resp.json()
                 return {

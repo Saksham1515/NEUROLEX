@@ -36,7 +36,7 @@ styled_header("🔍", "NER & Entity Linking", "BERT-NER extraction + Wikipedia e
 no_model_warning(MODELS["ner"]["model_name"])
 
 EXAMPLES = [
-    "Elon Musk announced that Tesla will open a new Gigafactory in Berlin, Germany next year.",
+    "Steve joined Apple Inc in America to launch the Xbox Series X.",
     "Barack Obama served as the 44th President of the United States from 2009 to 2017.",
     "OpenAI, founded in San Francisco, released GPT-4 as a breakthrough in artificial intelligence.",
 ]
@@ -123,6 +123,8 @@ if run and text.strip():
                 unique_entities = list({e["word"]: e for e in entities}.values())[:6]
                 for ent in unique_entities:
                     with st.spinner(f"Linking {ent['word']}..."):
+                        # data = ner._search_wikipedia(user_input=st.session_state.selected_text, entity=ent["word"])   # use sentence transformer for sementic search  [Doesn't Perform Well]
+                        # linked = ner.link_entity(data)
                         linked = ner.link_entity(ent["word"])
                     color = ent["color"]
                     found_badge = "✅ Found" if linked["found"] else "❌ Not Found"

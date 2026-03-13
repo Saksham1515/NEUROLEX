@@ -4,6 +4,9 @@ All model names, device settings, and hyperparameters.
 """
 import torch
 
+#   Headers for Wikipedia API requests (with contact info for responsible use)
+HEADERS = {"User-Agent": "NEUROLEX/1.0 (contact: your_email@example.com)"}
+
 # ─── Device ──────────────────────────────────────────────────────────────────
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
