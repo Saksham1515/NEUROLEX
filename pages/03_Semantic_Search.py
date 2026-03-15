@@ -8,6 +8,13 @@ from neurolex.utils import styled_header, no_model_warning
 from neurolex.config import MODELS
 from app import render_sidebar
 render_sidebar()    
+
+if "selected_example" not in st.session_state:
+    st.session_state.selected_example = None
+    
+if "top_k" not in st.session_state:
+    st.session_state.top_k = 3
+
 st.set_page_config(page_title="Semantic Search | NEUROLEX", page_icon="🔎", layout="wide")
 st.markdown("""
 <style>
@@ -45,7 +52,9 @@ col1, col2 = st.columns([2, 3])
 with col1:
     st.markdown("**📚 Document Corpus** (one document per line)")
     corpus_text = st.text_area("Corpus", value=DEFAULT_CORPUS, height=220, label_visibility="collapsed")
-    top_k = st.slider("Top-K Results", 1, 10, 5)
+    docs = [d.strip() for d in corpus_text.strip().split("\n") if d.strip()]
+    st.session_state.top_k = len(docs) if len(docs) !=0 else st.session_state.top_k
+    top_k = st.slider("Top-K Results", 1, st.session_state.top_k,1)
 
 with col2:
     st.markdown("**🔍 Query**")
@@ -59,9 +68,9 @@ with col2:
     for i, (qc, eq) in enumerate(zip(qcols, EXAMPLE_QUERIES)):
         with qc:
             if st.button(f"Q{i+1}", key=f"ss_q_{i}", use_container_width=True):
-                selected_q = eq
+                st.session_state.selected_example = eq
 
-    query = st.text_input("Search query", value=selected_q or "", placeholder="Enter your semantic query...")
+    query = st.text_input("Search query", value=st.session_state.selected_example or "", placeholder="Enter your semantic query...")
 
     c1, c2 = st.columns(2)
     with c1:
@@ -70,7 +79,7 @@ with col2:
         show_matrix = st.button("🗂️ Similarity Matrix", use_container_width=True)
 
 if run_search and query.strip():
-    docs = [d.strip() for d in corpus_text.strip().split("\n") if d.strip()]
+
     if not docs:
         st.error("Please add documents to the corpus.")
     else:

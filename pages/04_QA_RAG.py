@@ -7,6 +7,12 @@ from neurolex.utils import styled_header, no_model_warning
 from neurolex.config import MODELS
 from app import render_sidebar
 render_sidebar()    
+if "selected_example" not in st.session_state:
+    st.session_state.selected_example = None
+    
+if "doc_len" not in st.session_state:
+    st.session_state.doc_len = 3
+
 st.set_page_config(page_title="Q&A / RAG | NEUROLEX", page_icon="💡", layout="wide")
 st.markdown("""
 <style>
@@ -56,17 +62,18 @@ with col1:
 with col2:
     st.markdown("**❓ Question**")
     qcols = st.columns(1)
-    selected_q = None
 
     for i, eq in enumerate(EXAMPLE_QUESTIONS):
         if st.button(f"🔹 {eq[:45]}…", key=f"qa_ex_{i}", use_container_width=True):
-            selected_q = eq
+            st.session_state.selected_example = eq
 
     question = st.text_input(
-        "Your question", value=selected_q or "",
+        "Your question", value=st.session_state.selected_example or "",
         placeholder="Ask anything about the documents...",
     )
-    top_k = st.slider("Retrieved Passages (top-k)", 1, 8, 3)
+    docs = [d.strip() for d in docs_text.strip().split("\n\n") if d.strip()]
+    st.session_state.doc_len = max(1,len(docs))
+    top_k = st.slider("Retrieved Passages (top-k)", 1, st.session_state.doc_len, 3)
     run = st.button("💡 Get Answer", use_container_width=True)
 
 if run:
@@ -75,7 +82,6 @@ if run:
     elif not question.strip():
         st.warning("Please enter a question.")
     else:
-        docs = [d.strip() for d in docs_text.strip().split("\n\n") if d.strip()]
         if not docs:
             docs = [docs_text]
 
