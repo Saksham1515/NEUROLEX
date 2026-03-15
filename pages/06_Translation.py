@@ -45,7 +45,7 @@ with col1:
 with col2:
     st.markdown("**Quick Examples:**")
     for pair_name, ex_text in list(EXAMPLES.items())[:3]:
-        if st.button(f"📝 {pair_name}", key=f"t_ex_{pair_name[:6]}", use_container_width=True):
+        if st.button(f"📝 {pair_name}", key=f"t_ex_{pair_name[:]}", use_container_width=True):
             st.session_state["trans_pair"] = pair_name
             st.session_state["trans_text"] = ex_text
 
