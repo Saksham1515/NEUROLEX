@@ -8,6 +8,10 @@ from neurolex.utils import styled_header, no_model_warning
 from neurolex.config import MODELS
 from app import render_sidebar
 render_sidebar()    
+
+if "load_article" not in st.session_state:
+    st.session_state.load_article = None
+
 st.set_page_config(page_title="Summarization | NEUROLEX", page_icon="📝", layout="wide")
 st.markdown("""
 <style>
@@ -48,11 +52,9 @@ col1, col2 = st.columns([2, 1])
 with col1:
     st.markdown("**📄 Document to Summarize**")
     if st.button("📰 Load Example Article", key="sum_ex"):
-        text = EXAMPLE_TEXT
-    else:
-        text = None
+        st.session_state.load_article = EXAMPLE_TEXT
     document = st.text_area(
-        "Document", value=text or "", height=220,
+        "Document", value=st.session_state.load_article or " ", height=220,
         placeholder="Paste a long document here...", label_visibility="collapsed",
     )
 

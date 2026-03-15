@@ -34,7 +34,7 @@ MODELS = {
     },
     "summarizer_abstractive": {
         "model_name": "facebook/bart-large-cnn",
-        "task": "summarization",
+        "task": "summarization", # "text-generation",
         "description": "BART fine-tuned on CNN/DailyMail for abstractive summarization",
     },
     "translator": {
