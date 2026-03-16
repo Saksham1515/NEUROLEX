@@ -4,20 +4,22 @@ Helsinki-NLP OPUS-MT with 14 language pair options.
 """
 from __future__ import annotations
 import streamlit as st
-from transformers import pipeline
+from transformers import MarianMTModel, MarianTokenizer
 from neurolex.config import MODELS, TRANSLATION_PAIRS
 
 
-# Cache loaded pipelines by language pair
-_translation_cache: dict[str, any] = {}
+# Cache loaded models by language pair
+_translation_cache: dict[str, tuple] = {}
 
-
-def _get_pipeline(src: str, tgt: str):
+@st.cache_resource(show_spinner=False)
+def _get_model(src: str, tgt: str):
     key = f"{src}-{tgt}"
     if key not in _translation_cache:
         model_name = MODELS["translator"]["model_name_template"].format(src=src, tgt=tgt)
         try:
-            _translation_cache[key] = pipeline("translation", model=model_name)
+            tokenizer = MarianTokenizer.from_pretrained(model_name)
+            model = MarianMTModel.from_pretrained(model_name)
+            _translation_cache[key] = (tokenizer, model)
         except Exception as e:
             _translation_cache[key] = None
     return _translation_cache[key]
@@ -65,17 +67,19 @@ class MultilingualTranslator:
             return {"error": f"Unknown language pair: {pair_name}"}
 
         src, tgt = self.LANGUAGE_PAIRS[pair_name]
-        pipe = _get_pipeline(src, tgt)
+        model_tuple = _get_model(src, tgt)
 
-        if pipe is None:
+        if model_tuple is None:
             return {
                 "error": f"Model for {pair_name} could not be loaded. "
                          f"Try a different language pair."
             }
 
+        tokenizer, model = model_tuple
         try:
-            result = pipe(text, max_length=max_length, truncation=True)
-            translation = result[0].get("translation_text", "")
+            inputs = tokenizer(text, return_tensors="pt", padding=True, truncation=True, max_length=max_length)
+            outputs = model.generate(**inputs, max_length=max_length)
+            translation = tokenizer.decode(outputs[0], skip_special_tokens=True)
             return {
                 "translation": translation,
                 "pair": pair_name,
