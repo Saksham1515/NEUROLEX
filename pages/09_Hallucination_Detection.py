@@ -41,21 +41,21 @@ EXAMPLES = [
         "generated": "The Eiffel Tower is located in London and was built in 1920.",
         "label": "🚨 Hallucination Example",
     },
-    {
-        "source": "Machine learning models are trained on large datasets to recognize patterns and make predictions.",
-        "generated": "Quantum computers are widely used in hospitals to perform surgeries automatically.",
-        "label": "🚨 Severe Hallucination",
-    },
 ]
+col3, col4 = st.columns(2)
+with col3:
+    if st.button("✅ Load Factual Example", key="h_ex_factual", use_container_width=True):
+        st.session_state["h_source"] = EXAMPLES[0]["source"]
+        st.session_state["h_generated"] = EXAMPLES[0]["generated"]
+with col4:
+    if st.button("🚨 Load Hallucination Example", key="h_ex_hallucination", use_container_width=True):
+        st.session_state["h_source"] = EXAMPLES[1]["source"]
+        st.session_state["h_generated"] = EXAMPLES[1]["generated"]
+    
 
 col1, col2 = st.columns(2)
 with col1:
     st.markdown("**📄 Source / Reference Document**")
-    for ex in EXAMPLES[:2]:
-        if st.button(f"Load: {ex['label']}", key=f"h_ex_{ex['label'][:5]}", use_container_width=True):
-            st.session_state["h_source"] = ex["source"]
-            st.session_state["h_generated"] = ex["generated"]
-
     source = st.text_area(
         "Source", value=st.session_state.get("h_source", ""),
         height=150, placeholder="Paste the reference document / ground truth...",
@@ -64,10 +64,7 @@ with col1:
 
 with col2:
     st.markdown("**🤖 Generated / Claim Text**")
-    if st.button("Load Severe Hallucination Example", key="h_ex_severe", use_container_width=True):
-        st.session_state["h_source"] = EXAMPLES[2]["source"]
-        st.session_state["h_generated"] = EXAMPLES[2]["generated"]
-
+    
     generated = st.text_area(
         "Generated", value=st.session_state.get("h_generated", ""),
         height=150, placeholder="Paste the generated text or claim to verify...",

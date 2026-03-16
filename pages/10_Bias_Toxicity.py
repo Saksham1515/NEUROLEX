@@ -8,6 +8,10 @@ from neurolex.utils import styled_header, no_model_warning
 from neurolex.config import MODELS
 from app import render_sidebar
 render_sidebar()    
+
+if "selected_text" not in st.session_state:
+    st.session_state["selected_text"] = None
+    
 st.set_page_config(page_title="Bias & Toxicity | NEUROLEX", page_icon="🛡️", layout="wide")
 st.markdown("""
 <style>
@@ -48,14 +52,13 @@ col1, col2 = st.columns([3, 2])
 with col1:
     st.markdown("**📝 Text to Analyze**")
     ex_cols = st.columns(2)
-    selected_text = None
     for i, (ec, (label, ex)) in enumerate(zip(ex_cols, EXAMPLES)):
         with ec:
-            if st.button(f"{label}", key=f"tox_ex_{i}", use_container_width=True):
-                selected_text = ex
+            if st.button(f"{label}", use_container_width=True):
+                st.session_state.selected_text = ex
 
     text = st.text_area(
-        "Input", value=selected_text or "", height=160,
+        "Input", value=st.session_state.selected_text or "", height=160,
         placeholder="Enter text to analyze for toxicity and bias...",
         label_visibility="collapsed",
     )
